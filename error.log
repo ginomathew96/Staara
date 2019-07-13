@@ -1,0 +1,2 @@
+{"level":"info","message":{},"service":"user-service"}
+{"level":"info","message":"ReferenceError: findsss is not defined","service":"user-service"}
