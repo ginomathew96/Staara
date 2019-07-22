@@ -1,26 +1,22 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-let jwt = require('jsonwebtoken');
-let config = require('./config');
-let middleware = require('./middleware');
-var serviceAccount = require('./config').config;
-var winston = require("winston")
+const jwt = require('jsonwebtoken');
+const config = require('./config');
+const middleware = require('./middleware');
+const winston = require("winston")
 const mongoose = require('mongoose');
-var morgan = require('morgan');
-var fs = require("fs");
-var path = require("path")
+const morgan = require('morgan');
+const fs = require("fs");
+const path = require("path")
+var admin = require("firebase-admin");
+
 
 const logger = winston.createLogger({
     level: 'error',
     format: winston.format.json(),
     defaultMeta: { service: 'user-service' },
     transports: [
-        //
-        // - Write to all logs with level `info` and below to `combined.log` 
-        // - Write all logs error (and below) to `error.log`.
-        //
-        new winston.transports.File({ filename: 'error.log', level: 'info' }),
-        new winston.transports.File({ filename: 'combined.log' })
+        new winston.transports.File({ filename: 'error.log', level: 'info' })
     ]
 });
 
@@ -51,7 +47,7 @@ class HandlerGenerator {
             } else {
                 res.send(400).json({
                     success: false,
-                    message: 'Authentication failed! Please check the request'
+                    message: '❌❌ Authentication failed! Please check the request'
                 });
             }
         } catch (error) {
@@ -60,7 +56,7 @@ class HandlerGenerator {
 
     }
     index(req, res) {
-        res.status(200).send("This route has nothing")
+        res.status(200).send("This route has nothing ❌❌❌❌❌❌")
     }
 }
 
@@ -71,7 +67,7 @@ async function connectdb() {
     mongoose.connect(config.dburl, { useNewUrlParser: true, useCreateIndex: true })
     connection = mongoose.connection;
     connection.on("connected", () => {
-        console.log('\x1b[36m%s\x1b[0m ', 'Connected DB');
+        console.log('\x1b[36m%s\x1b[0m ', 'Connected DB 🔄');
     })
     connection.on("error", () => {
         console.log(err)
@@ -89,6 +85,7 @@ function main() {
         extended: true
     }));
     app.use(bodyParser.json());
+    app.use("/uploads", express.static(__dirname + "/uploads"));
     // Routes & Handlers
     app.use(morgan("combined", {
         stream: fs.createWriteStream(path.join(__dirname, 'access.log'), { flags: 'a' })
@@ -106,6 +103,9 @@ function main() {
         console.log('Insert on port ' + port);
     })
     // console.log('\x1b[36m%s\x1b[0m ', 'Connected DB');  //cyan
-
+    admin.initializeApp({
+        credential: admin.credential.cert(config.BaseSecreat),
+        databaseURL: "https://staara-e47c3.firebaseio.com"
+    });
 }
 main();
