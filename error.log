@@ -21,3 +21,6 @@
 {"level":"info","message":"TypeError: Cannot destructure 'undefined' or 'null'.","service":"user-service"}
 {"level":"info","message":"TypeError: Cannot read property 'Symbol(Symbol.iterator)' of undefined","service":"user-service"}
 {"level":"info","message":"TypeError: Cannot read property 'Symbol(Symbol.iterator)' of undefined","service":"user-service"}
+{"level":"info","message":"Error: First argument to verifyIdToken() must be a Firebase ID token string.","service":"user-service"}
+{"level":"info","message":"Error: First argument to verifyIdToken() must be a Firebase ID token string.","service":"user-service"}
+{"level":"info","message":"Error: First argument to verifyIdToken() must be a Firebase ID token string.","service":"user-service"}
