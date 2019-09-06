@@ -38,9 +38,9 @@ class HandlerGenerator {
                     }
                 );
                 // return the JWT token for the future API calls
-                res.json({
+                res.status(200).json({
                     success: true,
-                    message: 'Authentication successful!',
+                    message: 'Exists',
                     token: token
                 });
 
@@ -56,7 +56,7 @@ class HandlerGenerator {
 
     }
     index(req, res) {
-        res.status(200).send("This route has nothing ❌❌❌❌❌❌")
+        res.status(500).send("This route has nothing")
     }
 }
 
@@ -64,7 +64,7 @@ class HandlerGenerator {
 // process.env.MONGODB_URI_MERCHANT;
 async function connectdb() {
     // console.log("reading", config.dburl);
-    mongoose.connect(config.dburl, { useNewUrlParser: true, useCreateIndex: true })
+    mongoose.connect(config.dburl, { useNewUrlParser: true, useCreateIndex: true, useFindAndModify: false })
     connection = mongoose.connection;
     connection.on("connected", () => {
         console.log('\x1b[36m%s\x1b[0m ', 'Connected DB 🔄');
@@ -93,8 +93,9 @@ function main() {
     app.get('/', middleware.checkToken, handlers.index);
     // app.listen(port, () => console.log(`Server is listening on port: ${port}`));
     // require("./Routes/routes")(app, handlers);
-    require("./controllers/users")(app, handlers, logger, connectdb())
-    // require("./controllers/schemes")(app, handlers, logger)
+    var connection = connectdb()
+    require("./controllers/users")(app, handlers, logger, connection)
+    require("./controllers/posts")(app, handlers, logger, connection)
     // require("./controllers/main")(app, handlers, logger)
     // Start the server
     app.listen(port, () => {

@@ -6,7 +6,7 @@ module.exports = function (app, handlers, logger, db) {
     const path = require("path")
     const fs = require("fs-extra")
     const multer = require("multer")
-
+    const crypto = require('crypto');
     const profilePictureStorage = multer.diskStorage({
         destination(req, file, cb) {
             // console.log(req.decoded)
@@ -25,16 +25,84 @@ module.exports = function (app, handlers, logger, db) {
             }
         }
     });
+    const UserUploadsStorage = multer.diskStorage({
+        destination(req, file, cb) {
+            // console.log(req.decoded)
+            const userId = req.decoded.username;
+            const pathToSave = `./uploads/user/${userId}/uploads`;
+            // console.log(pathToSave)
+            fs.ensureDirSync(pathToSave);
+            cb(undefined, pathToSave);
+
+        },
+        filename(req, file, cb) {
+            try {
+                // console.log(file)
+                crypto.pseudoRandomBytes(16, function (err, raw) {
+                    cb(null, raw.toString('hex') + path.extname(file.originalname));
+                });
+                // cb(undefined, file.originalname);
+            } catch (err) {
+                cb(err, file.originalname);
+            }
+        }
+    });
+
+
+    const imageFilter = function (req, file, cb) {
+        // accept image only
+        if (!file.originalname.toLowerCase().match(/\.(jpg|jpeg|png|gif)$/)) {
+            return cb(new Error('Only image files are allowed!'), false);
+        }
+        cb(null, true);
+    };
+
+
+
+
     const profilePictureUpload = multer({
-        storage: profilePictureStorage
+        storage: profilePictureStorage,
+        fileFilter: imageFilter
+    });
+
+    const UserUploads = multer({
+        storage: UserUploadsStorage,
     });
 
 
     app.post("/StrApi/actor/UpdateProfilePicture", middleware.checkToken,
-        profilePictureUpload.array("profilePic"), async function (req, res) {
-            res.status(200).json({
-                success: true,
-            });
+        profilePictureUpload.single("profilePic"), async function (req, res) {
+            if (req.files) {
+                res.status(200).json({
+                    success: true,
+                });
+            } else {
+                res.status(400).json({
+                    success: false,
+                    msg: "No File Found"
+                });
+            }
+        });
+
+    app.post("/StrApi/actor/UploadFiles", middleware.checkToken,
+        UserUploads.array("uploads"), async function (req, res) {
+            console.log(req.files)
+            const query = { uid: req.decoded.username }
+            if (req.files) {
+                ArtistModels.newuser.findOneAndUpdate(query, { $addToSet: { "Uploads": { "$each": req.files } } }, (err, response) => {
+                    console.log(err, response)
+                    res.status(200).json({
+                        success: true,
+                    });
+                })
+            } else {
+                res.status(400).json({
+                    success: false,
+                    msg: "No File Found"
+                });
+            }
+
+
         });
 
 
@@ -51,7 +119,7 @@ module.exports = function (app, handlers, logger, db) {
                     req.body.uid = decodedToken.uid;
                     ArtistModels.newuser.find({ "uid": req.body.uid }, function (err, docs) {
                         console.log(docs)
-                        if (!docs) {
+                        if (docs) {
                             var newuser = new ArtistModels.newuser(req.body)
                             newuser.DOB instanceof Date
                             newuser.save((err, res) => {
@@ -59,7 +127,7 @@ module.exports = function (app, handlers, logger, db) {
                                 if (!err) {
                                     next()
                                 } else {
-                                    res.status(500).json({
+                                    res.status(400).json({
                                         success: false,
                                         err: err
                                     });
@@ -76,7 +144,7 @@ module.exports = function (app, handlers, logger, db) {
         } catch (error) {
             console.log(error)
             logger.log({ level: 'info', message: `${error}` })
-            res.status(500).json({ error: `${error}` })
+            res.status(400).json({ error: `${error}` })
         }
 
     }, handlers.login);
@@ -90,21 +158,21 @@ module.exports = function (app, handlers, logger, db) {
                 .then(function (decodedToken) {
                     console.log(decodedToken)
                     req.body.uid = decodedToken.uid;
-                    ArtistModels.newuser.find({ "uid": req.body.uid }, function (err, docs) {
+                    ArtistModels.newuser.find({ "uid": req.body.uid }, function (err, docs, next) {
                         if (!docs) {
                             res.status(200).send("No User Found")
                         } else {
-                            res.status(500).send("User Exists")
+                            next()
                         }
                     })
                 })
 
         } catch (error) {
             logger.log({ level: 'info', message: `${error}` })
-            res.status(500).json({ error: `${error}` })
+            res.status(400).json({ error: `${error}` })
         }
 
-    });
+    }, handlers.login);
 
 
     app.post("/StrApi/SavePreferences", middleware.checkToken, async function (req, res) {
@@ -123,7 +191,7 @@ module.exports = function (app, handlers, logger, db) {
                         success: true
                     });
                 } else {
-                    res.status(500).json({
+                    res.status(400).json({
                         success: false,
                         err: err
                     });
@@ -132,7 +200,7 @@ module.exports = function (app, handlers, logger, db) {
 
         } catch (error) {
             logger.log({ level: 'info', message: `${error}` })
-            res.status(500).json({ error: `${error}` })
+            res.status(400).json({ error: `${error}` })
         }
 
     });
@@ -153,7 +221,7 @@ module.exports = function (app, handlers, logger, db) {
                         success: true
                     });
                 } else {
-                    res.status(500).json({
+                    res.status(400).json({
                         success: false,
                         err: err
                     });
@@ -163,7 +231,7 @@ module.exports = function (app, handlers, logger, db) {
         } catch (error) {
             console.log(error)
             logger.log({ level: 'info', message: `${error}` })
-            res.status(500).json({ error: `${error}` })
+            res.status(400).json({ error: `${error}` })
         }
 
     });
@@ -182,7 +250,7 @@ module.exports = function (app, handlers, logger, db) {
                         success: true,
                     });
                 } else {
-                    res.status(500).json({
+                    res.status(400).json({
                         success: false,
                         err: err
                     });
@@ -192,7 +260,7 @@ module.exports = function (app, handlers, logger, db) {
         } catch (error) {
             console.log(error)
             logger.log({ level: 'info', message: `${error}` })
-            res.status(500).json({ error: `${error}` })
+            res.status(400).json({ error: `${error}` })
         }
 
     });
@@ -212,7 +280,7 @@ module.exports = function (app, handlers, logger, db) {
                         success: true,
                     });
                 } else {
-                    res.status(500).json({
+                    res.status(400).json({
                         success: false,
                         err: err
                     });
@@ -222,28 +290,25 @@ module.exports = function (app, handlers, logger, db) {
         } catch (error) {
             console.log(error)
             logger.log({ level: 'info', message: `${error}` })
-            res.status(500).json({ error: `${error}` })
+            res.status(400).json({ error: `${error}` })
         }
 
     });
 
 
-    app.post("/StrApi/actor/Gethome", middleware.checkToken, async function (req, res) {
+    app.post("/StrApi/actor/GetUserDetails", middleware.checkToken, async function (req, res) {
         try {
             console.log("success", req.body)
-            let query = { uid: req.body.uid };
-            let userPortfolio = {
-                Experience: {},
-                Talents: []
-            } = req.body.portfolio
+            let query = { uid: req.decoded.username };
 
-            ArtistModels.newuser.findOneAndUpdate(query, { userPortfolio: userPortfolio }, (err, res) => {
+            ArtistModels.newuser.findOne(query, (err, response) => {
                 if (!err) {
                     res.status(200).json({
                         success: true,
+                        response: response
                     });
                 } else {
-                    res.status(500).json({
+                    res.status(400).json({
                         success: false,
                         err: `${err}`
                     });
@@ -252,7 +317,7 @@ module.exports = function (app, handlers, logger, db) {
 
         } catch (error) {
             logger.log({ level: 'info', message: `${error}` })
-            res.status(500).json({ error: `${error}` })
+            res.status(400).json({ error: `${error}` })
         }
 
     });

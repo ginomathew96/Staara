@@ -13,31 +13,32 @@ let checkToken = (req, res, next) => {
             if (token) {
                 jwt.verify(token, config.secret, (err, decoded) => {
                     if (err) {
-                        return res.json({
+                        return res.status(401).json({
                             success: false,
-                            message: 'Token is not valid❌❌❌❌'
+                            message: 'Token is not valid'
                         });
                     } else {
+                        // console.log(decoded)
                         req.decoded = decoded;
                         next();
                     }
                 });
             } else {
-                return res.json({
+                return res.status(401).json({
                     success: false,
-                    message: 'Auth token is not supplied❌❌❌❌❌'
+                    message: 'Auth token is not supplied'
                 });
             }
         } else {
-            return res.json({
+            return res.status(401).json({
                 success: false,
-                message: 'Auth token is not supplied❌❌❌❌❌'
+                message: 'Auth token is not supplied'
             });
         }
 
     } catch (err) {
         console.log("error", err)
-        res.status(500).json({ error: `${err}` })
+        res.status(400).json({ error: `${err}` })
     }
 
 };

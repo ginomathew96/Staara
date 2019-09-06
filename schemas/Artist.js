@@ -1,16 +1,40 @@
 
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
+var validate = require("validator")
 
-const userSchema = new Schema({
+exports.userSchema = new Schema({
     uid: { type: String, required: true, index: { unique: true } }, firstname: { type: String, required: true },
     lastname: { type: String },
     gender: { type: String }, mobileno: { type: mongoose.Number, required: true }, DOB: { type: Date },
     country: { type: String }, state: { type: String }, city: { type: String },
-    zipcode: { type: String }, email: { type: String, $regex: /@mongodb\.com$/ }, Schemtype: { type: String },
-    userPreference: Schema.Types.Mixed, userPortfolio: Schema.Types.Mixed
+    zipcode: { type: String }, email: { type: String, validate: [validate.isEmail, 'invalid email'] }, Schemtype: { type: String },
+    userPreference: Schema.Types.Mixed, userPortfolio: Schema.Types.Mixed, Uploads: Schema.Types.Mixed, usertype: { type: String, required: true },
+    requests: [{
+        CreatedDate: { type: Date, default: Date.now },
+        Post: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'posts'
+        }, status: String
+    }]
 
 })
-module.exports = {
-    userSchema: userSchema
-};
+exports.Posts = new Schema({
+    name: { type: String, required: true },
+    description: String,
+    PostedBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Users'
+    }, CreatedDate: { type: Date, default: Date.now }, Industry: Schema.Types.Mixed,
+    requests: [{
+        RequestedBy: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Users'
+        },
+        CreatedDate: { type: Date, default: Date.now }, status: String
+    }], active: Boolean
+})
+
+// module.exports = {
+//     userSchema: userSchema
+// };
