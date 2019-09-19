@@ -69,7 +69,7 @@ async function connectdb() {
     connection.on("connected", () => {
         console.log('\x1b[36m%s\x1b[0m ', 'Connected DB 🔄');
     })
-    connection.on("error", () => {
+    connection.on("error", (err) => {
         console.log(err)
     });
     return connection
