@@ -122,8 +122,8 @@ module.exports = function (app, handlers, logger, db) {
                         if (docs) {
                             var newuser = new ArtistModels.newuser(req.body)
                             newuser.DOB instanceof Date
-                            newuser.save((err, res) => {
-                                console.log("ers", err, res)
+                            newuser.save((err, ressssss) => {
+                                console.log("ers", err, ressssss)
                                 if (!err) {
                                     next()
                                 } else {
