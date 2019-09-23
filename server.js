@@ -47,7 +47,7 @@ class HandlerGenerator {
             } else {
                 res.send(400).json({
                     success: false,
-                    message: '❌❌ Authentication failed! Please check the request'
+                    message: 'Authentication failed! Please check the request'
                 });
             }
         } catch (error) {
