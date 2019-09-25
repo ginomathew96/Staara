@@ -38,7 +38,7 @@ module.exports = function (app, handlers, logger, db) {
         try {
             req.body.uid = req.decoded.username;
             console.log(req.body)
-            Postmodel.Posts.findByIdAndUpdate(req.body._id, ...req.body, (error, response) => {
+            Postmodel.Posts.findByIdAndUpdate(req.body._id, req.body, (error, response) => {
                 console.log(response)
                 if (!error) {
                     res.status(200).json({
@@ -46,6 +46,7 @@ module.exports = function (app, handlers, logger, db) {
                         msg: `Post Updated.`
                     });
                 } else {
+                    console.log(error)
                     res.status(400).json({
                         success: false,
                         msg: `${error}`
@@ -54,6 +55,7 @@ module.exports = function (app, handlers, logger, db) {
             })
 
         } catch (error) {
+            console.log(error)
             res.status(400).json({
                 success: false,
                 msg: `${error}`
@@ -120,6 +122,7 @@ module.exports = function (app, handlers, logger, db) {
 
     app.post("/StrApi/GetAllPosts", middleware.checkToken, async function (req, res) {
         try {
+            console.log(req.decoded.username)
             req.body.uid = req.decoded.username;
             // console.log(req.body)
             Postmodel.Posts.find()
