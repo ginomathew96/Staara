@@ -1,4 +1,4 @@
-module.exports = function (app, handlers, logger, db) {
+module.exports = (app, handlers, logger, db) => {
     let middleware = require('../middleware');
     var mongoose = require('mongoose');
     var ArtistModels = require("../models/Artist");
@@ -38,7 +38,7 @@ module.exports = function (app, handlers, logger, db) {
         filename(req, file, cb) {
             try {
                 // console.log(file)
-                crypto.pseudoRandomBytes(16, function (err, raw) {
+                crypto.pseudoRandomBytes(16, (err, raw) => {
                     cb(null, raw.toString('hex') + path.extname(file.originalname));
                 });
                 // cb(undefined, file.originalname);
@@ -49,7 +49,7 @@ module.exports = function (app, handlers, logger, db) {
     });
 
 
-    const imageFilter = function (req, file, cb) {
+    const imageFilter = (req, file, cb) => {
         // accept image only
         if (!file.originalname.toLowerCase().match(/\.(jpg|jpeg|png|gif)$/)) {
             return cb(new Error('Only image files are allowed!'), false);

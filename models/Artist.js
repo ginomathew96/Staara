@@ -36,11 +36,6 @@ var Posts = new Schema({
     }], active: Boolean
 })
 
-// module.exports = {
-//     userSchema: userSchema
-// };
-
-
 
 module.exports = {
     newuser: mongoose.model("Users", user),

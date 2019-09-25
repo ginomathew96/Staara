@@ -10,6 +10,7 @@ module.exports = function (app, handlers, logger, db) {
             Postmodel.newuser.findOne({ uid: uid }, (error, userres) => {
                 var newpost = new Postmodel.Posts({ PostedBy: userres._id, active: true, name: dataset.name, description: dataset.desc })
                 newpost.save((error, response) => {
+                    console.log(response)
                     if (!error) {
                         res.status(200).json({
                             success: true,
@@ -71,10 +72,17 @@ module.exports = function (app, handlers, logger, db) {
             var id = req.body._id
             Postmodel.Posts.findByIdAndUpdate(id, { status: false }, (err, response) => {
                 console.log(err, response)
-                res.status(200).json({
-                    success: true,
-                    msg: `Post Deleted`
-                });
+                if (!err) {
+                    res.status(200).json({
+                        success: true,
+                        msg: `Post Deleted`
+                    });
+                } else {
+                    res.status(400).json({
+                        success: false,
+                        msg: `${error}`
+                    });
+                }
             })
 
         } catch (error) {
@@ -160,8 +168,15 @@ module.exports = function (app, handlers, logger, db) {
             Postmodel.newuser.findOne({ uid: uid }, (error, userres) => {
                 Postmodel.Posts.find({ "_id": req.body._id, "requests.RequestedBy": userres._id }, (error, resp) => {
                     console.log(resp)
-                    if (resp.length != 0) {
-                        console.log("exists")
+                    if (error) {
+                        console.log('err', error)
+                        res.status(400).json({
+                            success: false,
+                            msg: `${error}`
+                        });
+                    } else if (resp.length != 0) {
+                        console.log("exists");
+
                         res.status(200).json({
                             success: false,
                             msg: "exists"
