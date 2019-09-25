@@ -23,7 +23,7 @@ var user = new Schema({
 var Posts = new Schema({
     name: { type: String, required: true },
     description: String,
-    PostedBy: {type: mongoose.Schema.Types.ObjectId,ref: 'Users'},
+    PostedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'Users' },
     CreatedDate: { type: Date, default: Date.now },
     requests: [{
         RequestedBy: {
@@ -33,12 +33,13 @@ var Posts = new Schema({
         CreatedDate: { type: Date, default: Date.now },
         status: String
     }],
-    location:{type:String,required:true},
-    industry:{type:String,required:true},
-    gender:{type:String ,required:true},
-    characterDetails:{type:String},
-    age:{type:Number},
-    startDate:{type:Date,required:true},
+    location: { type: String, required: true },
+    industry: { type: String, required: true },
+    gender: { type: String, required: true },
+    characterDetails: { type: String },
+    ageStart: { type: String, required: true },
+    ageEnd: { type: String, required: true },
+    startDate: { type: Date, required: true },
     active: Boolean
 })
 

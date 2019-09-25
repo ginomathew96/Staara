@@ -9,17 +9,17 @@ module.exports = function (app, handlers, logger, db) {
             var dataset = req.body;
             console.log(new Date(dataset.startDate))
             Postmodel.newuser.findOne({ uid: uid }, (error, userres) => {
-                var newpost = new Postmodel.Posts({ PostedBy: userres._id, active: true,
-                                name: dataset.name, 
-                                description: dataset.desc,
-                                location:dataset.location,
-                                industry:dataset.industry,
-                                gender:dataset.gender,
-                                age:dataset.age,
-                                startDate:new Date(dataset.startDate)
-
-
-                            })
+                var newpost = new Postmodel.Posts({
+                    PostedBy: userres._id, active: true,
+                    name: dataset.name,
+                    description: dataset.desc,
+                    location: dataset.location,
+                    industry: dataset.industry,
+                    gender: dataset.gender,
+                    ageStart: dataset.ageStart,
+                    ageEnd: dataset.ageEnd,
+                    startDate: new Date(dataset.startDate)
+                })
                 newpost.save((error, response) => {
                     console.log(error)
                     if (!error) {
