@@ -5,12 +5,25 @@ var validate = require("validator")
 
 var Schema = mongoose.Schema;
 var user = new Schema({
-    uid: { type: String, required: true, index: { unique: true } }, firstname: { type: String, required: true },
+    uid: { type: String, required: true, index: { unique: true } },
+    firstname: { type: String, required: true },
     lastname: { type: String },
-    gender: { type: String }, mobileno: { type: String, required: true }, DOB: { type: Date },
-    country: { type: String }, state: { type: String }, city: { type: String },
-    zipcode: { type: String }, email: { type: String, validate: [validate.isEmail, 'invalid email'] }, Schemtype: { type: String },
-    userPreference: Schema.Types.Mixed, userPortfolio: Schema.Types.Mixed, Uploads: Schema.Types.Mixed, usertype: { type: String, required: true },
+    gender: { type: String },
+    mobileno: { type: String, required: true },
+    DOB: { type: Date },
+    country: { type: String },
+    state: { type: String },
+    city: { type: String },
+    zipcode: { type: String },
+    email: {
+        type: String,
+        validate: [validate.isEmail, 'invalid email']
+    },
+    Schemtype: { type: String },
+    userPreference: Schema.Types.Mixed,
+    userPortfolio: Schema.Types.Mixed,
+    Uploads: Schema.Types.Mixed,
+    usertype: { type: String, required: true },
     requests: [{
         CreatedDate: { type: Date, default: Date.now },
         Post: {
@@ -23,7 +36,7 @@ var user = new Schema({
 var Posts = new Schema({
     name: { type: String, required: true },
     description: String,
-    PostedBy: {type: mongoose.Schema.Types.ObjectId,ref: 'Users'},
+    PostedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'Users' },
     CreatedDate: { type: Date, default: Date.now },
     requests: [{
         RequestedBy: {
@@ -33,12 +46,12 @@ var Posts = new Schema({
         CreatedDate: { type: Date, default: Date.now },
         status: String
     }],
-    location:{type:String,required:true},
-    industry:{type:String,required:true},
-    gender:{type:String ,required:true},
-    characterDetails:{type:String},
-    age:{type:Number},
-    startDate:{type:Date,required:true},
+    location: { type: String, required: true },
+    industry: { type: String, required: true },
+    gender: { type: String, required: true },
+    characterDetails: { type: String },
+    age: { type: Number },
+    startDate: { type: Date, required: true },
     active: Boolean
 })
 
