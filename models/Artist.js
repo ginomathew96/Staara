@@ -16,7 +16,11 @@ var user = new Schema({
         Post: {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'posts'
-        }, status: String
+        }, status: String,
+        userShema: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Plans'
+        }
     }]
 
 })
@@ -43,6 +47,12 @@ var Posts = new Schema({
     active: Boolean
 })
 
+var plans = new Schema({
+    name: { type: String, required: true },
+    description: { type: String, required: false },
+    Dailylimit: { type: Number, required: true }
+})
+
 // module.exports = {
 //     userSchema: userSchema
 // };
@@ -51,5 +61,6 @@ var Posts = new Schema({
 
 module.exports = {
     newuser: mongoose.model("Users", user),
-    Posts: mongoose.model("Posts", Posts)
+    Posts: mongoose.model("Posts", Posts),
+    plans: mongoose.model("Plans", plans)
 }
