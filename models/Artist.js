@@ -29,7 +29,11 @@ var user = new Schema({
         Post: {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'posts'
-        }, status: String
+        }, status: String,
+        userShema: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Plans'
+        }
     }]
 
 })
@@ -50,9 +54,16 @@ var Posts = new Schema({
     industry: { type: String, required: true },
     gender: { type: String, required: true },
     characterDetails: { type: String },
-    age: { type: Number },
+    ageStart: { type: String, required: true },
+    ageEnd: { type: String, required: true },
     startDate: { type: Date, required: true },
     active: Boolean
+})
+
+var plans = new Schema({
+    name: { type: String, required: true },
+    description: { type: String, required: false },
+    Dailylimit: { type: Number, required: true }
 })
 
 // module.exports = {
@@ -63,5 +74,6 @@ var Posts = new Schema({
 
 module.exports = {
     newuser: mongoose.model("Users", user),
-    Posts: mongoose.model("Posts", Posts)
+    Posts: mongoose.model("Posts", Posts),
+    plans: mongoose.model("Plans", plans)
 }
