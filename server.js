@@ -96,7 +96,7 @@ function main() {
     var connection = connectdb()
     require("./controllers/users")(app, handlers, logger, connection)
     require("./controllers/posts")(app, handlers, logger, connection)
-    // require("./controllers/main")(app, handlers, logger)
+     require("./controllers/main")(app, handlers, logger)
     // Start the server
     app.listen(port, () => {
         console.log('\x1b[31m%s\x1b[0m ', 'Started At ' + new Date());

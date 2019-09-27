@@ -1,10 +1,11 @@
 module.exports = function (app, handlers, logger) {
     var admin = require("firebase-admin");
-    var firebase = require("firebase");
-    var db = admin.firestore();
+    //var firebase = require("firebase");
+    //var db = admin.firestore();
     let middleware = require('../middleware');
+    var Model = require("../models/Artist");
 
-    app.post('/GetAndroidConfig', middleware.checkToken, async function (req, res) {
+   /* app.post('/GetAndroidConfig', middleware.checkToken, async function (req, res) {
         req.on('data', function (chunk) {
             try {
                 var version = JSON.parse(chunk.toString()).version;
@@ -29,5 +30,33 @@ module.exports = function (app, handlers, logger) {
                 console.log(ex);
             }
         });
-    });
+    });*/
+    app.post('/savePlan',async function(req,res){
+        try{
+        var dataset = req.body;
+        Model.plans.create({
+            name:dataset.name,
+            description:dataset.desc,
+            dailyLimit:dataset.dailyLimit
+        },function (error, result)  {
+            console.log(error)
+            if (!error) {
+                res.status(200).json({
+                    success: true,
+                    msg: `Plan Saved.`
+                });
+            } else {
+                res.status(400).json({
+                    success: false,
+                    msg: `${error}`
+                });
+            }
+        })
+    }catch (error) {
+        logger.log({ level: 'info', message: `${error}` })
+        res.status(400).json({ error: `${error}` })
+    }
+
+
+    })
 }
