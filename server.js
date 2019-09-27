@@ -99,7 +99,6 @@ function main() {
     // require("./controllers/main")(app, handlers, logger)
     // Start the server
     app.listen(port, () => {
-        ;
         console.log('\x1b[31m%s\x1b[0m ', 'Started At ' + new Date());
         console.log('Insert on port ' + port);
     })

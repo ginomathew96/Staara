@@ -1,4 +1,4 @@
-module.exports = (app, handlers, logger, db) => {
+module.exports = (app, handlers, logger) => {
     let middleware = require('../middleware');
     var mongoose = require('mongoose');
     var ArtistModels = require("../models/Artist");
@@ -116,7 +116,7 @@ module.exports = (app, handlers, logger, db) => {
             admin.auth().verifyIdToken(req.body.idToken)
                 .then(function (decodedToken) {
                     console.log(decodedToken)
-                    //req.body.uid = decodedToken.uid;
+                    req.body.uid = decodedToken.uid;
                     ArtistModels.newuser.find({ "uid": req.body.uid }, function (err, docs) {
                         console.log(docs)
                         if (docs) {

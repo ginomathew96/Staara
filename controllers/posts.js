@@ -1,4 +1,4 @@
-module.exports = function (app, handlers, logger, db) {
+module.exports = function (app, handlers, logger) {
     let middleware = require('../middleware');
     var mongoose = require('mongoose');
     var Postmodel = require("../models/Artist");
