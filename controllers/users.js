@@ -321,6 +321,31 @@ module.exports = (app, handlers, logger, db) => {
         }
 
     });
+    app.get('/GetUsers', async function (req, res) {
+        try {
+            ArtistModels.newuser.find()
+                .select("firstname lastname mobileno gender email userPortfolio city")
+                .exec()
+                .then((response, error) => {
+                    if (!error) {
+                        res.status(200).json({
+                            success: true,
+                            msg: response
+                        });
+                    } else {
+                        res.status(400).json({
+                            success: false,
+                            msg: `${err}`
+                        });
+                    }
+
+                })
+        } catch (error) {
+            logger.log({ level: 'info', message: `${error}` })
+            res.status(400).json({ error: `${error}` })
+        }
+
+    })
 
 
 

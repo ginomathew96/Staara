@@ -63,7 +63,7 @@ var Posts = new Schema({
 var plans = new Schema({
     name: { type: String, required: true },
     description: { type: String, required: false },
-    Dailylimit: { type: Number, required: true }
+    dailyLimit: { type: Number, required: true }
 })
 
 // module.exports = {
