@@ -81,7 +81,7 @@ module.exports = function (app, handlers, logger) {
             req.body.uid = req.decoded.username;
             console.log(req.body)
             var id = req.body._id
-            Postmodel.Posts.findByIdAndUpdate(id, { status: false }, (err, response) => {
+            Postmodel.Posts.findByIdAndUpdate(id, { active: false }, (err, response) => {
                 console.log(err, response)
                 if (!err) {
                     res.status(200).json({
@@ -176,7 +176,8 @@ module.exports = function (app, handlers, logger) {
         try {
             var uid = req.decoded.username;
             var id = mongoose.Types.ObjectId();
-            Postmodel.newuser.findOne({ uid: uid }, (error, userres) => {
+            Postmodel.newuser.findOne({ uid: uid }, (error, 
+                userres) => {
                 Postmodel.Posts.find({ "_id": req.body._id, "requests.RequestedBy": userres._id }, (error, resp) => {
                     console.log(resp)
                     if (error) {

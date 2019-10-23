@@ -1,5 +1,3 @@
-
-
 var mongoose = require('mongoose');
 var validate = require("validator")
 
@@ -21,8 +19,13 @@ var user = new Schema({
     },
     Schemtype: { type: String },
     userPreference: Schema.Types.Mixed,
+    // userPreference: {
+    //     Industry: { type: String},
+    //     categories: { type: String }
+    // },
     userPortfolio: Schema.Types.Mixed,
     Uploads: Schema.Types.Mixed,
+    ProfileUploads: Schema.Types.Mixed,
     usertype: { type: String, required: true },
     requests: [{
         CreatedDate: { type: Date, default: Date.now },
@@ -51,6 +54,8 @@ var Posts = new Schema({
         status: String
     }],
     location: { type: String, required: true },
+    Uploads: Schema.Types.Mixed,
+   
     industry: { type: String, required: true },
     gender: { type: String, required: true },
     characterDetails: { type: String },

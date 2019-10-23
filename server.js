@@ -82,6 +82,7 @@ function main() {
     let handlers = new HandlerGenerator();
     const port = process.env.PORT || 3000;
     app.use(bodyParser.urlencoded({ // Middleware
+
         extended: true
     }));
     app.use(bodyParser.json());

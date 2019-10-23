@@ -71,11 +71,17 @@ module.exports = (app, handlers, logger) => {
 
 
     app.post("/StrApi/actor/UpdateProfilePicture", middleware.checkToken,
-        profilePictureUpload.single("profilePic"), async function (req, res) {
+        profilePictureUpload.array("profilePic"), async function (req, res) {
+
+            const query = { uid: req.decoded.username }
+            console.log(req.files)
             if (req.files) {
-                res.status(200).json({
-                    success: true,
-                });
+                ArtistModels.newuser.findOneAndUpdate(query, {  $addToSet: { "ProfileUploads": { "$each":  req.files } } }, (err, response) => {
+                    console.log(err, response)
+                    res.status(200).json({
+                        success: true,
+                    });
+                })
             } else {
                 res.status(400).json({
                     success: false,
@@ -83,6 +89,39 @@ module.exports = (app, handlers, logger) => {
                 });
             }
         });
+
+        // app.post("/StrApi/actor/UpdateProfilePicture", middleware.checkToken,
+        // profilePictureUpload.single("profilePic"), async function (req, res ) {
+        //     if(req.files) {
+        //         res.status(200).json({
+        //             success:true,
+        //         });
+        //     }else {
+        //         res.status(400).json({
+        //             success:false,
+        //             msg: "No File Found"
+        //         });
+        //     }
+
+        // });
+
+
+    // app.post("/StrApi/actor/UpdateProfilePicture", middleware.checkToken,
+    //     profilePictureUpload.single("profilePic"), async function (req, res) {
+    //         console.log(req.files)
+    //         if (!req.files) {
+    //             console.log("No file received");
+    //             return res.send({
+    //               success: false
+    //             });
+            
+    //           } else {
+    //             console.log('file received');
+    //             return res.send({
+    //               success: true
+    //             })
+    //           }
+    //     });
 
     app.post("/StrApi/actor/UploadFiles", middleware.checkToken,
         UserUploads.array("uploads"), async function (req, res) {
@@ -117,9 +156,10 @@ module.exports = (app, handlers, logger) => {
                 .then(function (decodedToken) {
                     console.log(decodedToken)
                     req.body.uid = decodedToken.uid;
-                    ArtistModels.newuser.find({ "uid": req.body.uid }, function (err, docs) {
+                    ArtistModels.newuser.findOne({ "uid": req.body.
+                    uid }, function (err, docs) {
                         console.log(docs)
-                        if (docs) {
+                        if (!docs) {
                             var newuser = new ArtistModels.newuser(req.body)
                             newuser.DOB instanceof Date
                             newuser.save((err, ressssss) => {
@@ -175,6 +215,7 @@ module.exports = (app, handlers, logger) => {
     }, handlers.login);
 
 
+
     app.post("/StrApi/SavePreferences", middleware.checkToken, async function (req, res) {
         try {
             console.log("success", req.body);
@@ -205,6 +246,37 @@ module.exports = (app, handlers, logger) => {
 
     });
 
+
+    // app.post("/StrApi/SavePreferences", middleware.checkToken, async function (req, res) {
+    //     try {
+    //         console.log("success", req.body);
+    //         let query = { uid: req.body.uid };
+    //         let userPreference = {
+    //             Industry: [],
+    //             categories: {}
+    //         } = req.body.preferences;
+
+    //         ArtistModels.newuser.findOneAndUpdate(query, { userPreference: userPreference }, (err, res) => {
+    //             console.log("ers", err, res)
+    //             if (!err) {
+    //                 res.status(200).json({
+    //                     success: true
+    //                 });
+    //             } else {
+    //                 res.status(400).json({
+    //                     success: false,
+    //                     err: err
+    //                 });
+    //             }
+    //         });
+
+    //     } catch (error) {
+    //         logger.log({ level: 'info', message: `${error}` })
+    //         res.status(400).json({ error: `${error}` })
+    //     }
+
+    // });
+
     app.post("/StrApi/SavePortfolio", middleware.checkToken, async function (req, res) {
         try {
             console.log("success", req.body)
@@ -219,6 +291,7 @@ module.exports = (app, handlers, logger) => {
                     console.log(response)
                     res.status(200).json({
                         success: true
+                         
                     });
                 } else {
                     res.status(400).json({
@@ -244,6 +317,8 @@ module.exports = (app, handlers, logger) => {
             let Talents = req.body.Talents;
 
             ArtistModels.newuser.findOneAndUpdate(query, { "$push": { "userPortfolio.Talents": { "$each": Talents } } }, (err, response) => {
+                
+                console.log('res:',response)
                 if (!err) {
                     console.log(response)
                     res.status(200).json({
@@ -345,7 +420,36 @@ module.exports = (app, handlers, logger) => {
             res.status(400).json({ error: `${error}` })
         }
 
-    })
+    });
+
+    app.post("/StrApi/EditProfile", middleware.checkToken,async function(req, res) {
+        try{
+
+            console.log("success", req.body)
+            let query = { uid: req.decoded.username };
+
+            ArtistModels.newuser.findOneAndUpdate(query, {$set:req.body},(err, response) => {
+                if (!err) {
+                    res.status(200).json({
+                        success: true,
+                        response: response
+                    });
+                } else {
+                    res.status(400).json({
+                        success: false,
+                        err: `${err}`
+                    });
+                }
+
+            })
+
+        }
+        catch (error) {
+            logger.log({ level: 'info', message: `${error}` })
+            res.status(400).json({ error: `${error}` })
+        }
+
+    });
 
 
 
